@@ -1,0 +1,88 @@
+incremental:
+  init_cls: 10
+  increment: 10
+
+net:
+  net_type: "SplitCosNet"
+  backbone_type: "resnet18"
+  for_insubset: True
+
+learner:
+  learner_type: "APR"
+  amp: False
+
+loss:
+  cls_lambda: 1.0
+  kd_lambda: 10.0
+
+init_optimizer:
+  type: "sgd"
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 5e-4
+  grad_accum: 2
+
+incremental_optimizer:
+  type: "sgd"
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 2e-4
+  grad_accum: 2
+
+init_scheduler:
+  type: "cos"
+  total_epochs: 200
+
+incremental_scheduler:
+  type: "cos"
+  total_epochs: 60
+
+protos:
+  normalize: True
+  svd_k: Null
+  gamma1_eval: 40
+
+adc:
+  do_adc: True
+  clamp_x: True
+  attack: True
+  batchsize: 16
+  adc_sample_limit: 1000
+  adc_alpha: 25
+  epochs: 3
+  input_data_mode: "adcapr"
+  trans_epochs: 64
+  trans_lr: 1e-4
+  colorjitter: False
+  cifar10policy: False
+  imagenetpolicy: True
+
+apr:
+  do_apr: True
+  do_reproducible_trans: True
+  perturb: True
+  p_batchsize: 16
+  perturb_alpha: 64
+  loops: 2
+  apr_sample_limit: 200
+  clamp_x: False
+  colorjitter: False
+  cifar10policy: False
+  imagenetpolicy: True
+  proto_noise_mag: 1
+
+data:
+  type: "ImageNetSubset"
+  train:
+    batch_size: 32
+    init_batch_size: 32
+    num_workers: 2
+  test:
+    init_batch_size: 128
+
+log:
+  interval: 20
+  metrics: ["Linear", "Mahalanobis", "NCM"]
+  use_tqdm: False
+  ckpt_idx: []
+  ckpt_tmpl: "apr_imagenetsubset_task_{}.pth"

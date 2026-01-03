@@ -1,0 +1,13 @@
+.idea
+*.log
+*.csv
+__pycache__
+*.pth
+*.pkl
+logs
+data
+*.csv
+*.pkl
+*.log
+*.npz
+*.pyc
