@@ -1,0 +1,63 @@
+incremental:
+  init_cls: 10
+  increment: 10
+  shuffle_cls: True
+
+net:
+  net_type: "SplitCosNet"
+  backbone_type: "resnet18"
+  for_insubset: False
+
+learner:
+  learner_type: "BaseLearner"
+  amp: False
+
+loss:
+  cls_lambda: 1.0
+  kd_lambda: 10.0
+
+init_optimizer:
+  type: "sgd"
+  lr: 0.1
+  momentum: 0.9
+  weight_decay: 5e-4
+  grad_accum: 1
+
+incremental_optimizer:
+  type: "sgd"
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 2e-4
+  grad_accum: 1
+
+init_scheduler:
+  type: "cos"
+  total_epochs: 200
+  milestones: []
+  lrdecay: 0.1
+
+incremental_scheduler:
+  type: "cos"
+  total_epochs: 100
+  milestones: []
+  lrdecay: 0.1
+
+data:
+  type: "iCIFAR100"
+  cifar10policy: True
+  cifar10colorjitter: True
+  train:
+    batch_size: 64
+    init_batch_size: 64
+    num_workers: 2
+  test:
+    batch_size: 128
+    init_batch_size: 128
+    num_workers: 2
+
+log:
+  interval: 20
+  metrics: ["Linear"]
+  use_tqdm: False
+  ckpt_idx: []
+  ckpt_tmpl: "default_cl_task_{}.pth"
