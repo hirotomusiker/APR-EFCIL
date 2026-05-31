@@ -668,6 +668,9 @@ class APR(BaseLearner):
                 else:
                     params_dict[k] = torch.cat([p[k] for p in params])
             dataset.register_rep_params(params_dict)
+            self._logger.info(
+                "[ADC] reproducibility parameters registered to the dataset."
+            )
             del params_dict
             del params
         protos = [p["proto"] for p in self._prototypes[: self._known_classes]]
@@ -1027,9 +1030,15 @@ class APR(BaseLearner):
             f"~ {max(dataset.labels[dataset.indices])}"
         )
         if self._cfg.apr.do_reproducible_trans:
-            dataset.register_rep_params(
-                all_params, all_data, self._cfg.apr.apr_sample_limit
+            dataset.register_rep_params(all_params)
+            self._logger.info(
+                "[APR] Reproducible transform parameters"
+                + " registered for APR dataloader"
             )
+        dataset.register_apr_data_info(
+            all_data, self._cfg.apr.apr_sample_limit
+        )
+        self._logger.info("[APR] APR data info registered for APR dataloader")
         dataset.check_old_data(self._known_classes)
         self.p_dataloader = DataLoader(
             dataset,
