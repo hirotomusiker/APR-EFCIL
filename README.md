@@ -93,17 +93,14 @@ Please check [[config docs](docs/CONFIGS.md)] that describes usage of config par
 
 ## Citation
 
-Preprint version. We will update this with the camera-ready version after WACV26.
-
 ```BibTeX
-@misc{honda2025adversarialpseudoreplayexemplarfreeclassincremental,
-      title={Adversarial Pseudo-replay for Exemplar-free Class-incremental Learning},
-      author={Hiroto Honda},
-      year={2025},
-      eprint={2511.17973},
-      archivePrefix={arXiv},
-      primaryClass={cs.CV},
-      url={https://arxiv.org/abs/2511.17973},
+@InProceedings{Honda_2026_WACV,
+    author    = {Honda, Hiroto},
+    title     = {Adversarial Pseudo-replay for Exemplar-free Class-incremental Learning},
+    booktitle = {Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV)},
+    month     = {March},
+    year      = {2026},
+    pages     = {7493-7502}
 }
 ```
 
