@@ -45,7 +45,7 @@ class IncrementalDataset(Dataset):
         self.as_paths = as_paths
         self.mode = mode
         self.rep_params = None
-        self.rep_num_data_per_class = None
+        self.apr_num_data_per_class = None
 
     def _init_params(self) -> dict[str, float]:
         """Initialize reproducible transform parameters as np.nan.
@@ -56,28 +56,31 @@ class IncrementalDataset(Dataset):
         params = {k: np.nan for k in PARAM_KEYS}
         return params
 
+    def register_apr_data_info(
+        self, data_indices: np.ndarray, num_data_per_class: int
+    ):
+        """Register the number of pseudo-replay samples per class.
+        Called when doing APR.
+
+        Args:
+            num_data_per_class (int): Number of pseudo-replay
+                samples per class.
+            data_indices (np.ndarray): Selected indices of the new task data.
+        """
+        self.indices = self.indices[data_indices]
+        self.apr_num_data_per_class = num_data_per_class
+
     def register_rep_params(
         self,
         rep_params: dict[str, list],
-        data_indices: np.ndarray | None = None,
-        num_data_per_class: int | None = None,
     ):
         """Register the random transform parameters
-        to reproduce them afterwards.
+        to reproduce them afterwards. Called when doing ADC or APR.
 
         Args:
             rep_params (dict[str, int | float]): Transform parameters.
-
-            data_indices (np.ndarray | None, optional): Selected indices
-                of the new task data. Defaults to None.
-            num_data_per_class (int | None, optional): Number of pseudo-replay
-                samples per class. Pseudo labels are calculated using this
-                value. Defaults to None.
         """
         self.rep_params = rep_params
-        if data_indices is not None and num_data_per_class is not None:
-            self.rep_num_data_per_class = num_data_per_class
-            self.indices = self.indices[data_indices]
 
     def __len__(self):
         return len(self.indices)
@@ -126,8 +129,10 @@ class IncrementalDataset(Dataset):
             else:
                 idx_params = self._init_params()
             img, dst_params = self.transforms(img, idx_params)
-            if self.rep_num_data_per_class is not None:
-                label = idx // self.rep_num_data_per_class
+            if self.apr_num_data_per_class is not None:
+                # For APR, pseudo labels are assigned according to
+                # the class order of the new task data.
+                label = idx // self.apr_num_data_per_class
             else:
                 label = self.labels[global_idx]
             return img, label, dst_params
