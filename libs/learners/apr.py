@@ -598,6 +598,14 @@ class APR(BaseLearner):
             mode=self._cfg.adc.input_data_mode,
         )
         subset_dataset.indices = dataset.indices[closest]
+        self._logger.info(
+            f"[ADC] current total classes: {self._cur_total_classes}, "
+            f"known classes: {self._known_classes}, "
+            f"dataset for ADC (mode = {subset_dataset.mode}) prepared, "
+            f"labels: {min(subset_dataset.labels[subset_dataset.indices])} "
+            f"~ {max(subset_dataset.labels[subset_dataset.indices])}"
+        )
+        subset_dataset.check_old_data(self._known_classes)
         if self._cfg.adc.input_data_mode == "adcapr":
             subset_dataset.rep_params = {
                 k: dataset.rep_params[k][closest].tolist()
